@@ -21,12 +21,29 @@ type CarImageRow = {
   path?: string | null;
 };
 
+type CustomerFormState = {
+  name: string;
+  phone: string;
+  budget: number | null;
+  carId: number | null;
+  notes: string;
+  followUpAt: string | null;
+};
+
 export default function EmployeeSearchPage() {
   const [cars, setCars] = useState<Car[]>([]);
   const [imagesByCarId, setImagesByCarId] = useState<Record<number, string>>({});
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [form, setForm] = useState<CustomerFormState>({
+    name: '',
+    phone: '',
+    budget: null,
+    carId: null,
+    notes: '',
+    followUpAt: null,
+  });
 
   async function loadCars() {
     setLoading(true);
@@ -89,6 +106,10 @@ export default function EmployeeSearchPage() {
     return cars.filter((car) => car.name.toLowerCase().includes(term));
   }, [cars, search]);
 
+  function updateFormField<K extends keyof CustomerFormState>(field: K, value: CustomerFormState[K]) {
+    setForm((current) => ({ ...current, [field]: value }));
+  }
+
   return (
     <div style={{ maxWidth: 1200, margin: '2rem auto', padding: 24 }}>
       <h1>Search Cars</h1>
@@ -148,4 +169,29 @@ export default function EmployeeSearchPage() {
       )}
     </div>
   );
+}
+
+function buildCustomerPayload() {
+  return {
+    name: '',
+    phone: null,
+    budget: null,
+    interested_car_id: null,
+    notes: null,
+    status: 'interested',
+  };
+}
+
+async function createCustomer(customerPayload: Record<string, unknown>) {
+  const { data: customerData, error: customerError } = await supabase
+    .from('customers')
+    .insert(customerPayload)
+    .select('*')
+    .single();
+
+  if (customerError) {
+    console.warn('Failed to create customer:', customerError);
+  } else {
+    console.log('Customer created:', customerData);
+  }
 }

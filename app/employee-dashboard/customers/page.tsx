@@ -8,12 +8,6 @@ type CarOption = {
   name: string;
 };
 
-type ColumnMeta = {
-  column_name: string;
-  is_nullable: string;
-  column_default: string | null;
-};
-
 type CustomerFormState = {
   name: string;
   phone: string;
@@ -40,8 +34,6 @@ export default function EmployeeCustomersPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
-  const [customerColumns, setCustomerColumns] = useState<ColumnMeta[]>([]);
-  const [followupColumns, setFollowupColumns] = useState<ColumnMeta[]>([]);
 
   useEffect(() => {
     void loadPageData();
@@ -63,14 +55,6 @@ export default function EmployeeCustomersPage() {
       const { data: authData, error: authError } = await supabase.auth.getUser();
       if (authError) throw authError;
       setUserId(authData.user?.id ?? null);
-
-      const [customerCols, followupCols] = await Promise.all([
-        getTableColumns('customers'),
-        getTableColumns('followups'),
-      ]);
-
-      setCustomerColumns(customerCols);
-      setFollowupColumns(followupCols);
     } catch (err: unknown) {
       console.error(err);
       setError(err instanceof Error ? err.message : 'Failed to load customer form data.');
@@ -79,127 +63,29 @@ export default function EmployeeCustomersPage() {
     }
   }
 
-  async function getTableColumns(tableName: string): Promise<ColumnMeta[]> {
-    try {
-      const { data, error } = await supabase
-        .from('information_schema.columns')
-        .select('column_name, is_nullable, column_default')
-        .eq('table_schema', 'public')
-        .eq('table_name', tableName);
-
-      if (error) {
-        console.warn(`Unable to inspect schema for ${tableName}:`, error);
-        return [];
-      }
-
-      return (data as ColumnMeta[]) ?? [];
-    } catch (err) {
-      console.warn(`Unable to inspect schema for ${tableName}:`, err);
-      return [];
-    }
-  }
-
-  function findColumn(columns: ColumnMeta[], candidates: string[]) {
-    return candidates.find((candidate) =>
-      columns.some((col) => col.column_name.toLowerCase() === candidate.toLowerCase())
-    );
+  function updateFormField<K extends keyof CustomerFormState>(field: K, value: CustomerFormState[K]) {
+    setForm((current) => ({ ...current, [field]: value }));
   }
 
   function buildCustomerPayload() {
-    const payload: Record<string, unknown> = {};
-
-    const nameCol = findColumn(customerColumns, ['name']);
-    if (nameCol) payload[nameCol] = form.name.trim();
-
-    const phoneCol = findColumn(customerColumns, ['phone', 'phone_number']);
-    if (phoneCol) payload[phoneCol] = form.phone.trim() || null;
-
-    const budgetCol = findColumn(customerColumns, ['budget']);
-    if (budgetCol) payload[budgetCol] = form.budget ? Number(form.budget) : null;
-
-    const carCol = findColumn(customerColumns, ['car_id', 'interested_car_id', 'car']);
-    if (carCol) {
-      payload[carCol] = form.carId ? Number(form.carId) : null;
-    }
-
-    const notesCol = findColumn(customerColumns, ['notes']);
-    if (notesCol) payload[notesCol] = form.notes.trim() || null;
-
-    const followUpCol = findColumn(customerColumns, [
-      'next_follow_up',
-      'follow_up_at',
-      'follow_up_date',
-      'scheduled_at',
-    ]);
-    if (followUpCol) {
-      payload[followUpCol] = form.followUpAt ? new Date(form.followUpAt).toISOString() : null;
-    }
-
-    return payload;
+    return {
+      name: form.name.trim(),
+      phone: form.phone.trim() || null,
+      budget: form.budget ? Number(form.budget) : null,
+      interested_car_id: form.carId || null,
+      notes: form.notes.trim() || null,
+      status: 'interested',
+    };
   }
 
   function buildFollowupPayload(customerId: number) {
-    const payload: Record<string, unknown> = {};
-
-    const customerCol = findColumn(followupColumns, ['customer_id', 'customer']);
-    if (customerCol) payload[customerCol] = customerId;
-
-    const assignedCol = findColumn(followupColumns, ['assigned_to', 'employee_id']);
-    if (assignedCol) payload[assignedCol] = userId;
-
-    const notesCol = findColumn(followupColumns, ['notes', 'comment']);
-    if (notesCol) payload[notesCol] = form.notes.trim() || null;
-
-    const scheduledCol = findColumn(followupColumns, [
-      'scheduled_time',
-      'scheduled_at',
-      'next_follow_up',
-      'follow_up_at',
-      'follow_up_date',
-    ]);
-    if (scheduledCol) {
-      payload[scheduledCol] = form.followUpAt ? new Date(form.followUpAt).toISOString() : null;
-    }
-
-    return payload;
-  }
-
-  function applySensibleDefaults(tableName: string, payload: Record<string, unknown>, columns: ColumnMeta[]) {
-    const requiredColumns = columns.filter((col) => {
-      const name = col.column_name.toLowerCase();
-      if (name === 'id') return false;
-      if (name.endsWith('_id') && col.column_default && col.column_default.includes('nextval')) return false;
-      return col.is_nullable === 'NO' && !col.column_default;
-    });
-
-    for (const col of requiredColumns) {
-      const value = payload[col.column_name];
-
-      if (value === undefined || value === null || value === '') {
-        if (tableName === 'customers' && col.column_name.toLowerCase() === 'status') {
-          payload[col.column_name] = 'new';
-        } else if (tableName === 'followups' && col.column_name.toLowerCase() === 'status') {
-          payload[col.column_name] = 'pending';
-        }
-      }
-    }
-  }
-
-  function validateRequiredColumns(tableName: string, payload: Record<string, unknown>, columns: ColumnMeta[]) {
-    const requiredColumns = columns.filter((col) => {
-      const name = col.column_name.toLowerCase();
-      if (name === 'id') return false;
-      if (name.endsWith('_id') && col.column_default && col.column_default.includes('nextval')) return false;
-      return col.is_nullable === 'NO' && !col.column_default;
-    });
-
-    for (const col of requiredColumns) {
-      const value = payload[col.column_name];
-
-      if (value === undefined || value === null || value === '') {
-        throw new Error(`The ${tableName} table requires "${col.column_name}" and it was not provided.`);
-      }
-    }
+    return {
+      customer_id: customerId,
+      assigned_to: userId,
+      scheduled_time: form.followUpAt ? new Date(form.followUpAt).toISOString() : null,
+      status: 'pending',
+      notes: form.notes.trim() || null,
+    };
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -222,8 +108,6 @@ export default function EmployeeCustomersPage() {
       }
 
       const customerPayload = buildCustomerPayload();
-      applySensibleDefaults('customers', customerPayload, customerColumns);
-      validateRequiredColumns('customers', customerPayload, customerColumns);
 
       const { data: customerData, error: customerError } = await supabase
         .from('customers')
@@ -239,8 +123,6 @@ export default function EmployeeCustomersPage() {
       }
 
       const followupPayload = buildFollowupPayload(customerId);
-      applySensibleDefaults('followups', followupPayload, followupColumns);
-      validateRequiredColumns('followups', followupPayload, followupColumns);
 
       const { error: followupError } = await supabase
         .from('followups')
@@ -283,7 +165,7 @@ export default function EmployeeCustomersPage() {
             <input
               required
               value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              onChange={(e) => updateFormField('name', e.target.value)}
               style={{ width: '100%', padding: 8, marginTop: 4 }}
             />
           </label>
@@ -292,7 +174,7 @@ export default function EmployeeCustomersPage() {
             Phone
             <input
               value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              onChange={(e) => updateFormField('phone', e.target.value)}
               style={{ width: '100%', padding: 8, marginTop: 4 }}
             />
           </label>
@@ -302,7 +184,7 @@ export default function EmployeeCustomersPage() {
             <input
               type="number"
               value={form.budget}
-              onChange={(e) => setForm({ ...form, budget: e.target.value })}
+              onChange={(e) => updateFormField('budget', e.target.value)}
               style={{ width: '100%', padding: 8, marginTop: 4 }}
             />
           </label>
@@ -311,7 +193,7 @@ export default function EmployeeCustomersPage() {
             Interested Car
             <select
               value={form.carId}
-              onChange={(e) => setForm({ ...form, carId: e.target.value })}
+              onChange={(e) => updateFormField('carId', e.target.value)}
               style={{ width: '100%', padding: 8, marginTop: 4 }}
             >
               <option value="">Select a car</option>
@@ -327,7 +209,7 @@ export default function EmployeeCustomersPage() {
             Notes
             <textarea
               value={form.notes}
-              onChange={(e) => setForm({ ...form, notes: e.target.value })}
+              onChange={(e) => updateFormField('notes', e.target.value)}
               style={{ width: '100%', padding: 8, marginTop: 4, minHeight: 100 }}
             />
           </label>
@@ -338,7 +220,7 @@ export default function EmployeeCustomersPage() {
               required
               type="datetime-local"
               value={form.followUpAt}
-              onChange={(e) => setForm({ ...form, followUpAt: e.target.value })}
+              onChange={(e) => updateFormField('followUpAt', e.target.value)}
               style={{ width: '100%', padding: 8, marginTop: 4 }}
             />
           </label>

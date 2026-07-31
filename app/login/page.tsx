@@ -45,19 +45,6 @@ export default function LoginPage() {
         });
         if (signUpError) throw signUpError;
 
-        if (signUpData.user) {
-          const { error: upsertError } = await supabase.from('users').upsert({
-            id: signUpData.user.id,
-            email,
-            name: email.split('@')[0],
-            role: 'employee',
-          });
-
-          if (upsertError) {
-            console.error('[signup] users upsert error:', upsertError);
-          }
-        }
-
         // If no session returned, attempt to sign in immediately
         if (!signUpData?.user) {
           const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
