@@ -74,46 +74,63 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{maxWidth: 420, margin: '4rem auto', padding: 20}}>
-      <h1>{isSignup ? 'Sign Up' : 'Log In'}</h1>
-      <form onSubmit={handleSubmit}>
-        <label style={{display: 'block', marginBottom: 8}}>
-          Email
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{width: '100%', padding: 8, marginTop: 4}}
-          />
-        </label>
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10">
+      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+        <div className="mb-8 text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.25em] text-indigo-600">The Xchanger</p>
+          <h1 className="mt-2 text-3xl font-semibold text-slate-900">{isSignup ? 'Create your account' : 'Welcome back'}</h1>
+          <p className="mt-2 text-sm text-slate-500">
+            {isSignup ? 'Set up your workspace and continue.' : 'Sign in to access your dashboard.'}
+          </p>
+        </div>
 
-        <label style={{display: 'block', marginBottom: 8}}>
-          Password
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{width: '100%', padding: 8, marginTop: 4}}
-          />
-        </label>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <label className="block text-sm font-medium text-slate-700">
+            Email
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+            />
+          </label>
 
-        {error && <div style={{color: 'red', marginBottom: 8}}>{error}</div>}
+          <label className="block text-sm font-medium text-slate-700">
+            Password
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+            />
+          </label>
 
-        <button type="submit" disabled={loading} style={{padding: '8px 16px'}}>
-          {loading ? 'Please wait...' : isSignup ? 'Sign Up' : 'Log In'}
-        </button>
-      </form>
+          {error ? (
+            <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-600">
+              {error}
+            </div>
+          ) : null}
 
-      <p style={{marginTop: 12}}>
-        <button
-          onClick={() => setIsSignup(!isSignup)}
-          style={{background: 'none', border: 'none', color: 'blue', cursor: 'pointer', padding: 0}}
-        >
-          {isSignup ? 'Have an account? Log in' : "Don't have an account? Sign up"}
-        </button>
-      </p>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {loading ? 'Please wait...' : isSignup ? 'Create account' : 'Log In'}
+          </button>
+        </form>
+
+        <p className="mt-5 text-center text-sm text-slate-600">
+          <button
+            onClick={() => setIsSignup(!isSignup)}
+            className="font-medium text-indigo-600 transition hover:text-indigo-700"
+          >
+            {isSignup ? 'Have an account? Log in' : "Don't have an account? Sign up"}
+          </button>
+        </p>
+      </div>
     </div>
   );
 }
