@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { formatIstDate, formatIstTimestamp } from '../../../lib/dateFormatting';
 import { supabase } from '../../../lib/supabaseClient';
 
 type AttendanceRow = {
@@ -12,31 +13,11 @@ type AttendanceRow = {
 };
 
 function formatDisplayDate(value: string | null | undefined) {
-  if (!value) return '—';
-
-  const parsedDate = value.includes('T') ? new Date(value) : new Date(`${value}T00:00:00`);
-  if (Number.isNaN(parsedDate.getTime())) return value;
-
-  return parsedDate.toLocaleDateString('en-IN', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    timeZone: 'Asia/Kolkata',
-  });
+  return formatIstDate(value);
 }
 
 function formatDisplayTime(value: string | null | undefined) {
-  if (!value) return '—';
-
-  const parsedDate = new Date(value);
-  if (Number.isNaN(parsedDate.getTime())) return value;
-
-  return parsedDate.toLocaleTimeString('en-IN', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true,
-    timeZone: 'Asia/Kolkata',
-  });
+  return formatIstTimestamp(value);
 }
 
 export default function EmployeeAttendancePage() {
@@ -46,11 +27,7 @@ export default function EmployeeAttendancePage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    void loadAttendance();
-  }, []);
-
-  async function loadAttendance() {
+  const loadAttendance = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -85,7 +62,15 @@ export default function EmployeeAttendancePage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      void loadAttendance();
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [loadAttendance]);
 
   async function handleCheckIn() {
     if (!userId) {

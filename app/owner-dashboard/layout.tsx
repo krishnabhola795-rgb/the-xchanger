@@ -8,7 +8,6 @@ import { supabase } from '../../lib/supabaseClient';
 const navItems = [
   { href: '/owner-dashboard', label: 'Dashboard', shortLabel: 'Home' },
   { href: '/owner-dashboard/cars', label: 'Cars', shortLabel: 'Cars' },
-  { href: '/owner-dashboard/employees', label: 'Employees', shortLabel: 'Team' },
   { href: '/owner-dashboard/attendance', label: 'Attendance', shortLabel: 'Attend' },
   { href: '/owner-dashboard/customers', label: 'Customers', shortLabel: 'Cust.' },
   { href: '/owner-dashboard/reports', label: 'Reports', shortLabel: 'Reports' },

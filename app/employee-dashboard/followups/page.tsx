@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { formatIstTimestamp } from '../../../lib/dateFormatting';
 import { supabase } from '../../../lib/supabaseClient';
 
 type FollowupRow = {
@@ -21,11 +22,7 @@ export default function EmployeeFollowupsPage() {
   const [savingId, setSavingId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    void loadFollowups();
-  }, []);
-
-  async function loadFollowups() {
+  const loadFollowups = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -60,7 +57,15 @@ export default function EmployeeFollowupsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      void loadFollowups();
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [loadFollowups]);
 
   async function handleMarkDone(id: number) {
     setSavingId(id);
@@ -100,15 +105,7 @@ export default function EmployeeFollowupsPage() {
                 <div>
                   <p className="text-lg font-semibold text-slate-900">{followup.customers?.name ?? 'Customer'}</p>
                   <p className="mt-1 text-sm text-slate-500">Phone: {followup.customers?.phone ?? '—'}</p>
-                  <p className="mt-1 text-sm text-slate-500">Time: {followup.scheduled_time ? new Date(followup.scheduled_time).toLocaleString('en-IN', {
-                    timeZone: 'Asia/Kolkata',
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: true,
-                  }) : '—'}</p>
+                  <p className="mt-1 text-sm text-slate-500">Time: {formatIstTimestamp(followup.scheduled_time)}</p>
                   <p className="mt-1 text-sm text-slate-500">Status: {followup.status ?? '—'}</p>
                 </div>
 
