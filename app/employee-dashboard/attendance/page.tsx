@@ -17,9 +17,9 @@ function formatDisplayDate(value: string | null | undefined) {
   const parsedDate = value.includes('T') ? new Date(value) : new Date(`${value}T00:00:00`);
   if (Number.isNaN(parsedDate.getTime())) return value;
 
-  return parsedDate.toLocaleDateString('en-US', {
-    month: 'short',
+  return parsedDate.toLocaleDateString('en-IN', {
     day: 'numeric',
+    month: 'short',
     year: 'numeric',
     timeZone: 'Asia/Kolkata',
   });
@@ -31,8 +31,8 @@ function formatDisplayTime(value: string | null | undefined) {
   const parsedDate = new Date(value);
   if (Number.isNaN(parsedDate.getTime())) return value;
 
-  return parsedDate.toLocaleTimeString('en-US', {
-    hour: 'numeric',
+  return parsedDate.toLocaleTimeString('en-IN', {
+    hour: '2-digit',
     minute: '2-digit',
     hour12: true,
     timeZone: 'Asia/Kolkata',

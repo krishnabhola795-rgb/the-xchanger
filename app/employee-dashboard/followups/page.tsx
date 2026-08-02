@@ -100,7 +100,15 @@ export default function EmployeeFollowupsPage() {
                 <div>
                   <p className="text-lg font-semibold text-slate-900">{followup.customers?.name ?? 'Customer'}</p>
                   <p className="mt-1 text-sm text-slate-500">Phone: {followup.customers?.phone ?? '—'}</p>
-                  <p className="mt-1 text-sm text-slate-500">Time: {followup.scheduled_time ? new Date(followup.scheduled_time).toLocaleString() : '—'}</p>
+                  <p className="mt-1 text-sm text-slate-500">Time: {followup.scheduled_time ? new Date(followup.scheduled_time).toLocaleString('en-IN', {
+                    timeZone: 'Asia/Kolkata',
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true,
+                  }) : '—'}</p>
                   <p className="mt-1 text-sm text-slate-500">Status: {followup.status ?? '—'}</p>
                 </div>
 
