@@ -11,6 +11,34 @@ type AttendanceRow = {
   check_out: string | null;
 };
 
+function formatDisplayDate(value: string | null | undefined) {
+  if (!value) return '—';
+
+  const parsedDate = value.includes('T') ? new Date(value) : new Date(`${value}T00:00:00`);
+  if (Number.isNaN(parsedDate.getTime())) return value;
+
+  return parsedDate.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'Asia/Kolkata',
+  });
+}
+
+function formatDisplayTime(value: string | null | undefined) {
+  if (!value) return '—';
+
+  const parsedDate = new Date(value);
+  if (Number.isNaN(parsedDate.getTime())) return value;
+
+  return parsedDate.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: 'Asia/Kolkata',
+  });
+}
+
 export default function EmployeeAttendancePage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [attendance, setAttendance] = useState<AttendanceRow | null>(null);
@@ -168,9 +196,9 @@ export default function EmployeeAttendancePage() {
             {attendance ? (
               <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 sm:mt-6">
                 <p className="text-sm font-semibold text-slate-900">Today’s attendance details</p>
-                <p className="mt-2"><span className="font-medium text-slate-900">Date:</span> {attendance.date}</p>
-                <p className="mt-2"><span className="font-medium text-slate-900">Check In:</span> {attendance.check_in ?? '—'}</p>
-                <p className="mt-2"><span className="font-medium text-slate-900">Check Out:</span> {attendance.check_out ?? '—'}</p>
+                <p className="mt-2"><span className="font-medium text-slate-900">Date:</span> {formatDisplayDate(attendance.date)}</p>
+                <p className="mt-2"><span className="font-medium text-slate-900">Check In:</span> {formatDisplayTime(attendance.check_in)}</p>
+                <p className="mt-2"><span className="font-medium text-slate-900">Check Out:</span> {formatDisplayTime(attendance.check_out)}</p>
               </div>
             ) : null}
           </>
