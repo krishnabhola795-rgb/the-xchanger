@@ -51,7 +51,7 @@ export default function OwnerDashboardLayout({ children }: OwnerDashboardLayoutP
       <div className="mx-auto flex min-h-screen max-w-7xl flex-col lg:flex-row">
         <aside className="hidden w-72 flex-col border-r border-slate-200 bg-white px-5 py-6 shadow-sm lg:flex">
           <div className="mb-8">
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-indigo-600">The Xchanger</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-indigo-600">The Xchangers</p>
             <h2 className="mt-2 text-xl font-semibold text-slate-900">Owner Workspace</h2>
             <p className="mt-2 text-sm text-slate-500">A clean command center for daily operations.</p>
           </div>

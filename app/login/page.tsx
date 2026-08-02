@@ -106,14 +106,14 @@ export default function LoginPage() {
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-10">
           <Image
             src="/logo.png"
-            alt="The Xchanger watermark"
+            alt="The Xchangers watermark"
             width={260}
             height={260}
             className="h-[260px] w-[260px] object-contain"
           />
         </div>
         <div className="relative mb-6 text-center sm:mb-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.25em] text-indigo-600">The Xchanger</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.25em] text-indigo-600">The Xchangers</p>
           <h1 className="mt-2 text-2xl font-semibold text-slate-900 sm:text-3xl">
             {isSignup ? 'Create your account' : 'Welcome back'}
           </h1>

@@ -1,15 +1,47 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import IntroVideo from './components/IntroVideo';
 
 export default function Home() {
+  const [showIntro, setShowIntro] = useState(true);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+    // Check if intro has been shown in this session
+    const introShown = sessionStorage.getItem('introVideoShown');
+    if (introShown === 'true') {
+      setShowIntro(false);
+    }
+  }, []);
+
+  const handleIntroComplete = () => {
+    // Mark intro as shown for this session
+    sessionStorage.setItem('introVideoShown', 'true');
+    // Fade out the intro video
+    setShowIntro(false);
+  };
+
+  // Don't render anything until we're on the client to avoid hydration mismatch
+  if (!isClient) {
+    return null;
+  }
+
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-10 sm:px-6 lg:px-8">
+    <>
+      {showIntro && <IntroVideo onComplete={handleIntroComplete} />}
+      <main className={`min-h-screen bg-slate-50 px-4 py-10 sm:px-6 lg:px-8 transition-opacity duration-500 ${
+        showIntro ? 'opacity-0 pointer-events-none' : 'opacity-100'
+      }`}>
       <div className="mx-auto flex max-w-6xl flex-col gap-10 sm:gap-14">
         <section className="rounded-[2rem] border border-slate-200 bg-white/90 p-8 shadow-sm sm:p-12">
           <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center">
-            <Image src="/logo.png" alt="The Xchanger logo" width={72} height={72} className="object-contain" />
+            <Image src="/logo.png" alt="The Xchangers logo" width={72} height={72} className="object-contain" />
           </div>
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-indigo-600">The Xchanger</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-indigo-600">The Xchangers</p>
           <h1 className="mt-4 text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
             Welcome back. Who are you?
           </h1>
@@ -58,5 +90,6 @@ export default function Home() {
         </div>
       </div>
     </main>
+    </>
   );
 }

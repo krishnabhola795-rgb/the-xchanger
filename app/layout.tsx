@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "The Xchanger",
+  title: "The Xchangers",
   description: "Installable marketplace experience for car owners, employees, and customers.",
   manifest: "/manifest.json",
   icons: [
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     { rel: "apple-touch-icon", url: "/icon.svg" },
   ],
   other: {
-    "application-name": "The Xchanger",
+    "application-name": "The Xchangers",
     "mobile-web-app-capable": "yes",
     "apple-mobile-web-app-capable": "yes",
     "apple-mobile-web-app-status-bar-style": "default",
