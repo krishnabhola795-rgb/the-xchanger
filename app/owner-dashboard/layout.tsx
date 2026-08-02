@@ -28,18 +28,43 @@ export default function OwnerDashboardLayout({ children }: OwnerDashboardLayoutP
       const response = await supabase.auth.getUser();
       const user = response.data.user;
       setUserEmail(user?.email ?? 'Account');
+
+      if (!user?.id) {
+        router.replace('/login');
+        return;
+      }
+
+      const { data, error } = await supabase.from('users').select('role').eq('id', user.id).single();
+      const role = (data as { role?: string } | null)?.role;
+
+      if (error || role !== 'owner') {
+        router.replace('/employee-dashboard');
+      }
     }
 
     void loadUser();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUserEmail(session?.user?.email ?? 'Account');
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const currentUser = session?.user;
+      setUserEmail(currentUser?.email ?? 'Account');
+
+      if (!currentUser?.id) {
+        router.replace('/login');
+        return;
+      }
+
+      const { data, error } = await supabase.from('users').select('role').eq('id', currentUser.id).single();
+      const role = (data as { role?: string } | null)?.role;
+
+      if (error || role !== 'owner') {
+        router.replace('/employee-dashboard');
+      }
     });
 
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, []);
+  }, [router]);
 
   async function handleLogout() {
     await supabase.auth.signOut();
