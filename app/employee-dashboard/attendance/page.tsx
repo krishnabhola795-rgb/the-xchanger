@@ -126,55 +126,55 @@ export default function EmployeeAttendancePage() {
   }
 
   return (
-    <div style={{ maxWidth: 700, margin: '2rem auto', padding: 24 }}>
-      <h1>Attendance</h1>
+    <div className="mx-auto max-w-2xl rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:p-8">
+        {error ? (
+          <div className="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600 sm:mb-6">{error}</div>
+        ) : null}
 
-      {error && (
-        <div style={{ marginBottom: 16, color: 'crimson', background: '#ffe5e5', padding: 10, borderRadius: 6 }}>
-          {error}
-        </div>
-      )}
-
-      {loading ? (
-        <p>Loading attendance...</p>
-      ) : (
-        <>
-          <div style={{ marginBottom: 16 }}>
-            <strong>Status:</strong>{' '}
-            {attendance?.check_in && !attendance?.check_out
-              ? 'Checked in'
-              : attendance?.check_out
-                ? 'Checked out'
-                : 'Not checked in'}
-          </div>
-
-          <div style={{ display: 'flex', gap: 12 }}>
-            <button
-              onClick={handleCheckIn}
-              disabled={saving || Boolean(attendance?.check_in)}
-              style={{ padding: '10px 16px', cursor: 'pointer' }}
-            >
-              {saving ? 'Working...' : 'Check In'}
-            </button>
-
-            <button
-              onClick={handleCheckOut}
-              disabled={saving || !attendance?.check_in || Boolean(attendance?.check_out)}
-              style={{ padding: '10px 16px', cursor: 'pointer' }}
-            >
-              {saving ? 'Working...' : 'Check Out'}
-            </button>
-          </div>
-
-          {attendance && (
-            <div style={{ marginTop: 20, border: '1px solid #ddd', borderRadius: 8, padding: 16 }}>
-              <p><strong>Date:</strong> {attendance.date}</p>
-              <p><strong>Check In:</strong> {attendance.check_in ?? '—'}</p>
-              <p><strong>Check Out:</strong> {attendance.check_out ?? '—'}</p>
+        {loading ? (
+          <p className="text-sm text-slate-500">Loading attendance...</p>
+        ) : (
+          <>
+            <div className="rounded-2xl bg-gradient-to-br from-indigo-600 to-blue-500 p-5 text-white shadow-sm">
+              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-indigo-100">Today</p>
+              <p className="mt-2 text-2xl font-semibold">
+                {attendance?.check_in && !attendance?.check_out
+                  ? 'Checked in'
+                  : attendance?.check_out
+                    ? 'Checked out'
+                    : 'Not checked in'}
+              </p>
+              <p className="mt-2 text-sm text-indigo-100">Keep your workday moving with a quick tap.</p>
             </div>
-          )}
-        </>
-      )}
-    </div>
+
+            <div className="mt-5 grid gap-3 sm:mt-6 sm:grid-cols-2">
+              <button
+                onClick={handleCheckIn}
+                disabled={saving || Boolean(attendance?.check_in)}
+                className="min-h-[52px] rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {saving ? 'Working...' : 'Check In'}
+              </button>
+
+              <button
+                onClick={handleCheckOut}
+                disabled={saving || !attendance?.check_in || Boolean(attendance?.check_out)}
+                className="min-h-[52px] rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {saving ? 'Working...' : 'Check Out'}
+              </button>
+            </div>
+
+            {attendance ? (
+              <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 sm:mt-6">
+                <p className="text-sm font-semibold text-slate-900">Today’s attendance details</p>
+                <p className="mt-2"><span className="font-medium text-slate-900">Date:</span> {attendance.date}</p>
+                <p className="mt-2"><span className="font-medium text-slate-900">Check In:</span> {attendance.check_in ?? '—'}</p>
+                <p className="mt-2"><span className="font-medium text-slate-900">Check Out:</span> {attendance.check_out ?? '—'}</p>
+              </div>
+            ) : null}
+          </>
+        )}
+      </div>
   );
 }

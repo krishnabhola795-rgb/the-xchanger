@@ -84,43 +84,37 @@ export default function EmployeeFollowupsPage() {
   }
 
   return (
-    <div style={{ maxWidth: 900, margin: '2rem auto', padding: 24 }}>
-      <h1>Today's Follow-ups</h1>
+    <div className="space-y-4">
+        {error ? (
+          <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">{error}</div>
+        ) : null}
 
-      {error && (
-        <div style={{ marginBottom: 16, color: 'crimson', background: '#ffe5e5', padding: 10, borderRadius: 6 }}>
-          {error}
-        </div>
-      )}
-
-      {loading ? (
-        <p>Loading follow-ups...</p>
-      ) : followups.length === 0 ? (
-        <p>No follow-ups scheduled for today.</p>
-      ) : (
-        <ul style={{ listStyle: 'none', padding: 0, display: 'grid', gap: 12 }}>
-          {followups.map((followup) => (
-            <li key={followup.id} style={{ border: '1px solid #ddd', borderRadius: 8, padding: 16 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center' }}>
+        {loading ? (
+          <p className="text-sm text-slate-500">Loading follow-ups...</p>
+        ) : followups.length === 0 ? (
+          <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500 shadow-sm">No follow-ups scheduled for today.</div>
+        ) : (
+          followups.map((followup) => (
+            <div key={followup.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p style={{ margin: '0 0 6px' }}><strong>Customer:</strong> {followup.customers?.name ?? '—'}</p>
-                  <p style={{ margin: '0 0 6px' }}><strong>Phone:</strong> {followup.customers?.phone ?? '—'}</p>
-                  <p style={{ margin: 0 }}><strong>Time:</strong> {followup.scheduled_time ? new Date(followup.scheduled_time).toLocaleString() : '—'}</p>
-                  <p style={{ margin: '6px 0 0' }}><strong>Status:</strong> {followup.status ?? '—'}</p>
+                  <p className="text-lg font-semibold text-slate-900">{followup.customers?.name ?? 'Customer'}</p>
+                  <p className="mt-1 text-sm text-slate-500">Phone: {followup.customers?.phone ?? '—'}</p>
+                  <p className="mt-1 text-sm text-slate-500">Time: {followup.scheduled_time ? new Date(followup.scheduled_time).toLocaleString() : '—'}</p>
+                  <p className="mt-1 text-sm text-slate-500">Status: {followup.status ?? '—'}</p>
                 </div>
 
                 <button
                   onClick={() => void handleMarkDone(followup.id)}
                   disabled={savingId === followup.id}
-                  style={{ padding: '8px 12px', cursor: 'pointer' }}
+                  className="min-h-[44px] rounded-lg bg-indigo-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   {savingId === followup.id ? 'Working...' : 'Mark Done'}
                 </button>
               </div>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+            </div>
+          ))
+        )}
+      </div>
   );
 }

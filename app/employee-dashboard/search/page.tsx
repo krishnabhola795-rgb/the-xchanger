@@ -111,57 +111,91 @@ export default function EmployeeSearchPage() {
   }
 
   return (
-    <div style={{ maxWidth: 1200, margin: '2rem auto', padding: 24 }}>
-      <h1>Search Cars</h1>
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-indigo-600">Vehicle search</p>
+            <h1 className="mt-1 text-xl font-semibold text-slate-900">Search Cars</h1>
+            <p className="mt-1 text-sm text-slate-500">Browse available inventory with a clean, responsive view.</p>
+          </div>
 
-      <input
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search by car name"
-        style={{ width: '100%', padding: 10, marginBottom: 16 }}
-      />
+          <label className="relative block w-full max-w-md">
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+              <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+                <path d="M8.5 3a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11Zm0 0 6.5 6.5" />
+              </svg>
+            </span>
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by car name"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-9 pr-3 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-100"
+            />
+          </label>
+        </div>
+      </div>
 
-      {error && (
-        <div style={{ marginBottom: 16, color: 'crimson', background: '#ffe5e5', padding: 10, borderRadius: 6 }}>
+      {error ? (
+        <div className="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
           {error}
         </div>
-      )}
+      ) : null}
 
       {loading ? (
-        <p>Loading cars...</p>
+        <p className="mt-6 text-sm text-slate-500">Loading cars...</p>
       ) : filteredCars.length === 0 ? (
-        <p>No cars found.</p>
+        <div className="mt-6 rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-6 text-center text-sm text-slate-500">
+          No cars found.
+        </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
+        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {filteredCars.map((car) => {
             const imageUrl = imagesByCarId[car.id];
 
             return (
               <div
                 key={car.id}
-                style={{
-                  border: '1px solid #ddd',
-                  borderRadius: 10,
-                  padding: 16,
-                  background: '#fff',
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
-                }}
+                className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md"
               >
                 {imageUrl ? (
                   <img
                     src={imageUrl}
                     alt={car.name}
-                    style={{ width: '100%', height: 180, objectFit: 'cover', borderRadius: 8, marginBottom: 12 }}
+                    className="mb-4 h-44 w-full rounded-xl object-cover"
                   />
                 ) : null}
 
-                <h3 style={{ marginTop: 0 }}>{car.name}</h3>
-                <p><strong>Price:</strong> {car.price ?? '—'}</p>
-                <p><strong>Year:</strong> {car.year ?? '—'}</p>
-                <p><strong>Fuel:</strong> {car.fuel ?? '—'}</p>
-                <p><strong>Transmission:</strong> {car.transmission ?? '—'}</p>
-                <p><strong>Insurance Status:</strong> {car.insurance_status ?? '—'}</p>
-                <p><strong>Status:</strong> {car.status ?? '—'}</p>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-900">{car.name}</h3>
+                    <p className="mt-1 text-sm text-slate-500">{car.status ?? 'Available'}</p>
+                  </div>
+                  <span className="rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-semibold text-indigo-700">
+                    {car.transmission ?? '—'}
+                  </span>
+                </div>
+
+                <p className="mt-4 text-2xl font-bold text-indigo-700">
+                  {car.price != null ? `₹${car.price.toLocaleString()}` : 'Price on request'}
+                </p>
+
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+                    Year {car.year ?? '—'}
+                  </span>
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+                    {car.fuel ?? 'Fuel —'}
+                  </span>
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+                    {car.transmission ?? 'Transmission —'}
+                  </span>
+                </div>
+
+                <div className="mt-4 space-y-1 text-sm text-slate-600">
+                  <p><span className="font-medium text-slate-900">Insurance:</span> {car.insurance_status ?? '—'}</p>
+                  <p><span className="font-medium text-slate-900">Status:</span> {car.status ?? '—'}</p>
+                </div>
               </div>
             );
           })}

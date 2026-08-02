@@ -141,95 +141,95 @@ export default function EmployeeCustomersPage() {
   }
 
   return (
-    <div style={{ maxWidth: 800, margin: '2rem auto', padding: 24 }}>
-      <h1>Add Customer</h1>
+    <div className="mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:p-8">
+        {error ? (
+          <div className="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600 sm:mb-6">{error}</div>
+        ) : null}
 
-      {error && (
-        <div style={{ marginBottom: 16, color: 'crimson', background: '#ffe5e5', padding: 10, borderRadius: 6 }}>
-          {error}
-        </div>
-      )}
+        {success ? (
+          <div className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-600 sm:mb-6">{success}</div>
+        ) : null}
 
-      {success && (
-        <div style={{ marginBottom: 16, color: 'green', background: '#e8f8e8', padding: 10, borderRadius: 6 }}>
-          {success}
-        </div>
-      )}
+        {loading ? (
+          <p className="text-sm text-slate-500">Loading form...</p>
+        ) : (
+          <form onSubmit={handleSubmit} className="grid gap-4 sm:gap-5">
+            <div className="grid gap-4 md:grid-cols-2">
+              <label className="block text-sm font-medium text-slate-700">
+                Name
+                <input
+                  required
+                  value={form.name}
+                  onChange={(e) => updateFormField('name', e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-3 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                />
+              </label>
 
-      {loading ? (
-        <p>Loading form...</p>
-      ) : (
-        <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 12 }}>
-          <label>
-            Name
-            <input
-              required
-              value={form.name}
-              onChange={(e) => updateFormField('name', e.target.value)}
-              style={{ width: '100%', padding: 8, marginTop: 4 }}
-            />
-          </label>
+              <label className="block text-sm font-medium text-slate-700">
+                Phone
+                <input
+                  value={form.phone}
+                  onChange={(e) => updateFormField('phone', e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-3 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                />
+              </label>
 
-          <label>
-            Phone
-            <input
-              value={form.phone}
-              onChange={(e) => updateFormField('phone', e.target.value)}
-              style={{ width: '100%', padding: 8, marginTop: 4 }}
-            />
-          </label>
+              <label className="block text-sm font-medium text-slate-700">
+                Budget
+                <input
+                  type="number"
+                  value={form.budget}
+                  onChange={(e) => updateFormField('budget', e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-3 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                />
+              </label>
 
-          <label>
-            Budget
-            <input
-              type="number"
-              value={form.budget}
-              onChange={(e) => updateFormField('budget', e.target.value)}
-              style={{ width: '100%', padding: 8, marginTop: 4 }}
-            />
-          </label>
+              <label className="block text-sm font-medium text-slate-700">
+                Interested Car
+                <select
+                  value={form.carId}
+                  onChange={(e) => updateFormField('carId', e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-3 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                >
+                  <option value="">Select a car</option>
+                  {cars.map((car) => (
+                    <option key={car.id} value={car.id}>
+                      {car.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
 
-          <label>
-            Interested Car
-            <select
-              value={form.carId}
-              onChange={(e) => updateFormField('carId', e.target.value)}
-              style={{ width: '100%', padding: 8, marginTop: 4 }}
+            <label className="block text-sm font-medium text-slate-700">
+              Notes
+              <textarea
+                value={form.notes}
+                onChange={(e) => updateFormField('notes', e.target.value)}
+                className="mt-1 min-h-28 w-full rounded-lg border border-slate-300 px-3 py-3 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+              />
+            </label>
+
+            <label className="block text-sm font-medium text-slate-700">
+              Next Follow-up
+              <input
+                required
+                type="datetime-local"
+                value={form.followUpAt}
+                onChange={(e) => updateFormField('followUpAt', e.target.value)}
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-3 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+              />
+            </label>
+
+            <button
+              type="submit"
+              disabled={submitting}
+              className="min-h-[44px] w-full rounded-lg bg-indigo-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-70"
             >
-              <option value="">Select a car</option>
-              {cars.map((car) => (
-                <option key={car.id} value={car.id}>
-                  {car.name}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label>
-            Notes
-            <textarea
-              value={form.notes}
-              onChange={(e) => updateFormField('notes', e.target.value)}
-              style={{ width: '100%', padding: 8, marginTop: 4, minHeight: 100 }}
-            />
-          </label>
-
-          <label>
-            Next Follow-up
-            <input
-              required
-              type="datetime-local"
-              value={form.followUpAt}
-              onChange={(e) => updateFormField('followUpAt', e.target.value)}
-              style={{ width: '100%', padding: 8, marginTop: 4 }}
-            />
-          </label>
-
-          <button type="submit" disabled={submitting} style={{ padding: '10px 16px', cursor: 'pointer' }}>
-            {submitting ? 'Saving...' : 'Add Customer'}
-          </button>
-        </form>
-      )}
-    </div>
+              {submitting ? 'Saving...' : 'Add Customer'}
+            </button>
+          </form>
+        )}
+      </div>
   );
 }
