@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { formatIstTimestamp } from '../../../lib/dateFormatting';
 import { supabase } from '../../../lib/supabaseClient';
 
 type FollowupRow = {
@@ -26,6 +25,25 @@ type CarOption = {
   id: number;
   name: string | null;
 };
+
+function formatDisplayTime(value: string | null | undefined) {
+  if (!value) return '—';
+
+  const parsedDate = new Date(value);
+
+  if (Number.isNaN(parsedDate.getTime())) return value;
+
+  const timestampValue = value;
+  return new Date(timestampValue).toLocaleString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
+}
 
 export default function OwnerFollowupsPage() {
   const [followups, setFollowups] = useState<FollowupRow[]>([]);
@@ -171,7 +189,7 @@ export default function OwnerFollowupsPage() {
                       <td className="px-4 py-3 font-medium text-slate-900">{customerName}</td>
                       <td className="px-4 py-3 text-slate-600">{customerPhone}</td>
                       <td className="px-4 py-3 text-slate-600">{interestedCarName}</td>
-                      <td className="px-4 py-3 text-slate-600">{formatIstTimestamp(followup.scheduled_time)}</td>
+                      <td className="px-4 py-3 text-slate-600">{formatDisplayTime(followup.scheduled_time)}</td>
                       <td className="px-4 py-3 text-slate-600">{employeeName}</td>
                       <td className="px-4 py-3">
                         <span

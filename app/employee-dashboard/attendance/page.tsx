@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { formatIstDate, formatIstTimestamp } from '../../../lib/dateFormatting';
 import { supabase } from '../../../lib/supabaseClient';
 
 type AttendanceRow = {
@@ -13,11 +12,41 @@ type AttendanceRow = {
 };
 
 function formatDisplayDate(value: string | null | undefined) {
-  return formatIstDate(value);
+  if (!value) return '—';
+
+  const timestampValue = value.includes('T') ? value : `${value}T00:00:00`;
+  const parsedDate = new Date(timestampValue);
+
+  if (Number.isNaN(parsedDate.getTime())) return value;
+
+  return new Date(timestampValue).toLocaleString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
 }
 
 function formatDisplayTime(value: string | null | undefined) {
-  return formatIstTimestamp(value);
+  if (!value) return '—';
+
+  const parsedDate = new Date(value);
+
+  if (Number.isNaN(parsedDate.getTime())) return value;
+
+  const timestampValue = value;
+  return new Date(timestampValue).toLocaleString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
 }
 
 export default function EmployeeAttendancePage() {

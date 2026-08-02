@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { formatIstDate, formatIstTimestamp } from '../../../lib/dateFormatting';
 import { supabase } from '../../../lib/supabaseClient';
 
 type AttendanceRow = {
@@ -16,6 +15,44 @@ type AttendanceRow = {
 };
 
 type AttendanceFilter = 'day' | 'range';
+
+function formatDisplayDate(value: string | null | undefined) {
+  if (!value) return '—';
+
+  const timestampValue = value.includes('T') ? value : `${value}T00:00:00`;
+  const parsedDate = new Date(timestampValue);
+
+  if (Number.isNaN(parsedDate.getTime())) return value;
+
+  return new Date(timestampValue).toLocaleString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
+}
+
+function formatDisplayTime(value: string | null | undefined) {
+  if (!value) return '—';
+
+  const parsedDate = new Date(value);
+
+  if (Number.isNaN(parsedDate.getTime())) return value;
+
+  const timestampValue = value;
+  return new Date(timestampValue).toLocaleString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
+}
 
 export default function OwnerAttendancePage() {
   const [attendance, setAttendance] = useState<AttendanceRow[]>([]);
@@ -169,9 +206,9 @@ export default function OwnerAttendancePage() {
                 {filteredAttendance.map((row) => (
                   <tr key={row.id} className="align-top">
                     <td className="px-4 py-3 font-medium text-slate-900">{row.users?.name ?? 'Unknown employee'}</td>
-                    <td className="px-4 py-3 text-slate-600">{formatIstDate(row.date)}</td>
-                    <td className="px-4 py-3 text-slate-600">{formatIstTimestamp(row.check_in)}</td>
-                    <td className="px-4 py-3 text-slate-600">{formatIstTimestamp(row.check_out)}</td>
+                    <td className="px-4 py-3 text-slate-600">{formatDisplayDate(row.date)}</td>
+                    <td className="px-4 py-3 text-slate-600">{formatDisplayTime(row.check_in)}</td>
+                    <td className="px-4 py-3 text-slate-600">{formatDisplayTime(row.check_out)}</td>
                     <td className="px-4 py-3 text-slate-600">{calculateHours(row.check_in, row.check_out)}</td>
                   </tr>
                 ))}

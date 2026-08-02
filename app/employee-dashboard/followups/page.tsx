@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { formatIstTimestamp } from '../../../lib/dateFormatting';
 import { supabase } from '../../../lib/supabaseClient';
 
 type FollowupRow = {
@@ -15,6 +14,25 @@ type FollowupRow = {
     phone: string | null;
   } | null;
 };
+
+function formatDisplayTime(value: string | null | undefined) {
+  if (!value) return '—';
+
+  const parsedDate = new Date(value);
+
+  if (Number.isNaN(parsedDate.getTime())) return value;
+
+  const timestampValue = value;
+  return new Date(timestampValue).toLocaleString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
+}
 
 export default function EmployeeFollowupsPage() {
   const [followups, setFollowups] = useState<FollowupRow[]>([]);
@@ -105,7 +123,7 @@ export default function EmployeeFollowupsPage() {
                 <div>
                   <p className="text-lg font-semibold text-slate-900">{followup.customers?.name ?? 'Customer'}</p>
                   <p className="mt-1 text-sm text-slate-500">Phone: {followup.customers?.phone ?? '—'}</p>
-                  <p className="mt-1 text-sm text-slate-500">Time: {formatIstTimestamp(followup.scheduled_time)}</p>
+                  <p className="mt-1 text-sm text-slate-500">Time: {formatDisplayTime(followup.scheduled_time)}</p>
                   <p className="mt-1 text-sm text-slate-500">Status: {followup.status ?? '—'}</p>
                 </div>
 

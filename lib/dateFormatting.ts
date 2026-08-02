@@ -4,7 +4,8 @@ export function formatIstTimestamp(value: string | null | undefined) {
   const parsedDate = new Date(value);
   if (Number.isNaN(parsedDate.getTime())) return value;
 
-  return parsedDate.toLocaleString('en-IN', {
+  const timestampValue = value;
+  return new Date(timestampValue).toLocaleString('en-IN', {
     timeZone: 'Asia/Kolkata',
     day: 'numeric',
     month: 'short',
@@ -18,10 +19,11 @@ export function formatIstTimestamp(value: string | null | undefined) {
 export function formatIstDate(value: string | null | undefined) {
   if (!value) return '—';
 
-  const parsedDate = value.includes('T') ? new Date(value) : new Date(`${value}T00:00:00`);
+  const timestampValue = value.includes('T') ? value : `${value}T00:00:00`;
+  const parsedDate = new Date(timestampValue);
   if (Number.isNaN(parsedDate.getTime())) return value;
 
-  return parsedDate.toLocaleString('en-IN', {
+  return new Date(timestampValue).toLocaleString('en-IN', {
     timeZone: 'Asia/Kolkata',
     day: 'numeric',
     month: 'short',
